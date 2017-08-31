@@ -46,15 +46,13 @@ public class SocketClient {
             // receive message from server
             json = br.readLine();
 
+            // close socket
             socket.close();
 
             // map to ArrayList from json
             ObjectMapper mapper = new ObjectMapper();
             lights = mapper.readValue(json, new TypeReference<ArrayList<Light>>() {});
 
-            for(Light l: lights) {
-                System.out.println(l.getId() + ", LumPct: " + l.getLumPct());
-            }
 
         } catch (IOException e) {
             e.printStackTrace();
