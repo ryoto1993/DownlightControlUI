@@ -10,7 +10,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("monitor.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("monitor.fxml"));
+        Parent root = fxmlLoader.load();
         primaryStage.setTitle("KC-101 Downlight Monitor");
         primaryStage.setScene(new Scene(root, 800, 500));
         primaryStage.show();
