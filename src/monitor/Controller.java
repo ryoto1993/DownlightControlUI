@@ -1,5 +1,6 @@
 package monitor;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -12,6 +13,7 @@ import java.util.TimerTask;
 public class Controller {
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
+    private final ObservableList<LightData> lightsList = null;
 
     @FXML
     TableView<Light> table;
@@ -21,7 +23,12 @@ public class Controller {
     public void initialize() {
         // start socket client
         socketClient = new SocketClient("localhost", 44344);
+
+        // get lights data from server
         lights = socketClient.getLights();
+        for(Light l: lights) {
+            lightsList.add(new LightData(l.getId(), l.getLumPct(), l.getTemperature()));
+        }
 
         // setting table
         col_id.setCellValueFactory(new PropertyValueFactory<Light, Integer>("id"));

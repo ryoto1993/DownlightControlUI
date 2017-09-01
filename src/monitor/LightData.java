@@ -10,12 +10,12 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class LightData {
     private final SimpleIntegerProperty id;
     private final SimpleDoubleProperty lumPct;
-    private final SimpleIntegerProperty temperature;
+    private final SimpleDoubleProperty temperature;
 
-    public LightData(int id, double lum, int temp) {
+    public LightData(int id, double lum, double temp) {
         this.id = new SimpleIntegerProperty(id);
         this.lumPct = new SimpleDoubleProperty(lum);
-        this.temperature = new SimpleIntegerProperty(temp);
+        this.temperature = new SimpleDoubleProperty(temp);
     }
 
     public int getId() {
@@ -42,15 +42,15 @@ public class LightData {
         this.lumPct.set(lumPct);
     }
 
-    public int getTemperature() {
+    public double getTemperature() {
         return temperature.get();
     }
 
-    public SimpleIntegerProperty temperatureProperty() {
+    public SimpleDoubleProperty temperatureProperty() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(double temperature) {
         this.temperature.set(temperature);
     }
 }
