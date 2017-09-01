@@ -1,5 +1,6 @@
 package monitor;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -13,10 +14,10 @@ import java.util.TimerTask;
 public class Controller {
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
-    private final ObservableList<LightData> lightsList = null;
+    private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
 
     @FXML
-    TableView<Light> table;
+    TableView<LightData> table;
     @FXML
     TableColumn col_id, col_lum, col_temp;
 
@@ -31,10 +32,10 @@ public class Controller {
         }
 
         // setting table
-        col_id.setCellValueFactory(new PropertyValueFactory<Light, Integer>("id"));
-        col_lum.setCellValueFactory(new PropertyValueFactory<Light, Double>("lumPct"));
-        col_temp.setCellValueFactory(new PropertyValueFactory<Light, Integer>("temperature"));
-        table.getItems().addAll(lights);
+        col_id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        col_lum.setCellValueFactory(new PropertyValueFactory<>("lumPct"));
+        col_temp.setCellValueFactory(new PropertyValueFactory<>("temperature"));
+        table.setItems(lightsList);
 
         // update table item every X mill seconds
         Updater updater = new Updater();
@@ -49,13 +50,13 @@ public class Controller {
             ArrayList<Light> update = socketClient.getLights();
             for (Light l : update) {
                 Light u = lights.get(l.getId() - 1);
+                LightData ud = lightsList.get(l.getId() - 1);
                 u.setLumPct(l.getLumPct());
                 u.setTemperature(l.getTemperature());
                 u.setSignal(l.getSignal());
+                ud.setLumPct(l.getLumPct());
+                ud.setTemperature(l.getTemperature());
             }
-            // ToDo: have to fix table view to update...
-            table.getItems().removeAll(lights);
-            table.getItems().addAll(lights);
         }
     }
 
