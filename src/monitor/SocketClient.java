@@ -6,9 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class SocketClient {
     static private int port;
@@ -29,7 +28,9 @@ public class SocketClient {
             // generate socket
             InetSocketAddress endpoint = new InetSocketAddress(hostName, port);
             socket = new Socket();
-            socket.connect(endpoint);
+            try {
+                socket.connect(endpoint);
+            } catch (SocketException e) {}
 
             // setting
             OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());

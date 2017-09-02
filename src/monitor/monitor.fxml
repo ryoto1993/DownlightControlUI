@@ -15,11 +15,11 @@
       </AnchorPane>
    </center>
    <right>
-      <TableView fx:id="table" BorderPane.alignment="CENTER">
+      <TableView fx:id="table" prefWidth="230.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="col_id" prefWidth="75.0" text="ID" />
+          <TableColumn fx:id="col_id" prefWidth="50.0" text="ID" />
           <TableColumn fx:id="col_lum" prefWidth="75.0" text="Lum" />
-            <TableColumn fx:id="col_temp" prefWidth="75.0" text="Temp" />
+            <TableColumn fx:id="col_temp" prefWidth="90.0" text="Temp" />
         </columns>
       </TableView>
    </right>

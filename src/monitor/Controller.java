@@ -23,7 +23,7 @@ public class Controller {
 
     public void initialize() {
         // start socket client
-        socketClient = new SocketClient("localhost", 44344);
+        socketClient = new SocketClient("172.20.11.53", 44344);
 
         // get lights data from server
         lights = socketClient.getLights();
@@ -47,15 +47,19 @@ public class Controller {
 
     class Updater extends TimerTask {
         public void run() {
-            ArrayList<Light> update = socketClient.getLights();
-            for (Light l : update) {
-                Light u = lights.get(l.getId() - 1);
-                LightData ud = lightsList.get(l.getId() - 1);
-                u.setLumPct(l.getLumPct());
-                u.setTemperature(l.getTemperature());
-                u.setSignal(l.getSignal());
-                ud.setLumPct(l.getLumPct());
-                ud.setTemperature(l.getTemperature());
+            try {
+                ArrayList<Light> update = socketClient.getLights();
+                for (Light l : update) {
+                    Light u = lights.get(l.getId() - 1);
+                    LightData ud = lightsList.get(l.getId() - 1);
+                    u.setLumPct(l.getLumPct());
+                    u.setTemperature(l.getTemperature());
+                    u.setSignal(l.getSignal());
+                    ud.setLumPct(l.getLumPct());
+                    ud.setTemperature(l.getTemperature());
+                }
+            } catch (Exception e) {
+
             }
         }
     }
