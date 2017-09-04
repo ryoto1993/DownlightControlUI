@@ -13,9 +13,9 @@ class SocketClient {
     static private int port;
     static private String hostName;
 
-    SocketClient(String h, int p) {
-        hostName = h;
-        port = p;
+    SocketClient(String host_name, int port_num) {
+        hostName = host_name;
+        port = port_num;
     }
 
     // get lights by JSON

@@ -1,8 +1,6 @@
 package monitor;
 
-/**
- * Created by RyotoTomioka on 2017/06/12.
- */
+
 public class Light {
     private static int id_counter = 1;
     private int id;
