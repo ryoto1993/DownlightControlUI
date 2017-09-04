@@ -19,7 +19,11 @@ public class Controller {
     @FXML
     TableView<LightData> table;
     @FXML
-    TableColumn col_id, col_lum, col_temp;
+    TableColumn<Object, Object> col_id;
+    @FXML
+    TableColumn<Object, Object> col_lum;
+    @FXML
+    TableColumn<Object, Object> col_temp;
 
     public void initialize() {
         // start socket client
@@ -58,9 +62,7 @@ public class Controller {
                     ud.setLumPct(l.getLumPct());
                     ud.setTemperature(l.getTemperature());
                 }
-            } catch (Exception e) {
-
-            }
+            } catch (Exception ignored) {}
         }
     }
 

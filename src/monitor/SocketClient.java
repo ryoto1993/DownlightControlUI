@@ -9,28 +9,27 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-public class SocketClient {
+class SocketClient {
     static private int port;
     static private String hostName;
-    private Socket socket;
 
-    public SocketClient(String host, int port) {
-        this.hostName = host;
-        this.port = port;
+    SocketClient(String h, int p) {
+        hostName = h;
+        port = p;
     }
 
     // get lights by JSON
-    public ArrayList<Light> getLights() {
+    ArrayList<Light> getLights() {
         ArrayList<Light> lights = null;
-        String json = null;
+        String json;
 
         try {
             // generate socket
             InetSocketAddress endpoint = new InetSocketAddress(hostName, port);
-            socket = new Socket();
+            Socket socket = new Socket();
             try {
                 socket.connect(endpoint);
-            } catch (SocketException e) {}
+            } catch (SocketException ignored) {}
 
             // setting
             OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream());
