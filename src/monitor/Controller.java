@@ -7,6 +7,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,7 +28,8 @@ public class Controller {
 
     public void initialize() {
         // start socket client
-        socketClient = new SocketClient("localhost", 44344);
+        socketClient = new SocketClient(
+                new InetSocketAddress("localhost", 44344));
 
         // get lights data from server
         lights = socketClient.getLights();

@@ -10,12 +10,10 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 class SocketClient {
-    static private int port;
-    static private String hostName;
+    static private InetSocketAddress endpoint;
 
-    SocketClient(String host_name, int port_num) {
-        hostName = host_name;
-        port = port_num;
+    SocketClient(InetSocketAddress end) {
+        endpoint = end;
     }
 
     // get lights by JSON
@@ -25,7 +23,6 @@ class SocketClient {
 
         try {
             // generate socket
-            InetSocketAddress endpoint = new InetSocketAddress(hostName, port);
             Socket socket = new Socket();
             try {
                 socket.connect(endpoint);
