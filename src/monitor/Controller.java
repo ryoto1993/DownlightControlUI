@@ -44,14 +44,14 @@ public class Controller {
         table.setItems(lightsList);
 
         // update table item every X mill seconds
-        Updater updater = new Updater();
+        LightUpdater lightUpdater = new LightUpdater();
         Timer timer = new Timer();
-        timer.schedule(updater, 1000, 500);
+        timer.schedule(lightUpdater, 1000, 500);
 
 
     }
 
-    class Updater extends TimerTask {
+    class LightUpdater extends TimerTask {
         public void run() {
             try {
                 ArrayList<Light> update = socketClient.getLights();
