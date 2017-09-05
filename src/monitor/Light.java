@@ -15,9 +15,9 @@ public class Light {
         id = id_counter++;
     }
 
-    void setSignal(int[] sigs) {
-        signalA = sigs[0];
-        signalB = sigs[1];
+    void setSignals(int[] signals) {
+        signalA = signals[0];
+        signalB = signals[1];
     }
 
     void setLumPct(double pct) {this.lumPct = pct;}
@@ -25,6 +25,8 @@ public class Light {
     void setTemperature(double tmp) {this.temperature = tmp;}
 
     int getId() { return id; }
+
+    void setId(int id) {this.id = id;}
 
     double getLumPct() {
         return lumPct;
@@ -34,7 +36,7 @@ public class Light {
         return temperature;
     }
 
-    int[] getSignal() {
+    int[] getSignals() {
         return new int[]{signalA, signalB};
     }
 }

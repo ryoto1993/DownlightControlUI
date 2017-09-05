@@ -27,7 +27,7 @@ public class Controller {
 
     public void initialize() {
         // start socket client
-        socketClient = new SocketClient("172.20.11.53", 44344);
+        socketClient = new SocketClient("localhost", 44344);
 
         // get lights data from server
         lights = socketClient.getLights();
@@ -58,7 +58,7 @@ public class Controller {
                     LightData ud = lightsList.get(l.getId() - 1);
                     u.setLumPct(l.getLumPct());
                     u.setTemperature(l.getTemperature());
-                    u.setSignal(l.getSignal());
+                    u.setSignals(l.getSignals());
                     ud.setLumPct(l.getLumPct());
                     ud.setTemperature(l.getTemperature());
                 }
