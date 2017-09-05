@@ -1,11 +1,17 @@
 package monitor;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -25,6 +31,10 @@ public class Controller {
     TableColumn<Object, Object> col_lum;
     @FXML
     TableColumn<Object, Object> col_temp;
+    @FXML
+    Pane canvas_pane;
+    @FXML
+    Canvas canvas;
 
     public void initialize() {
         // start socket client
@@ -48,7 +58,22 @@ public class Controller {
         Timer timer = new Timer();
         timer.schedule(lightUpdater, 1000, 500);
 
+    }
 
+    // canvas resize
+    void canvasResize() {
+        double size = canvas_pane.getHeight() > canvas_pane.getWidth()
+                ? canvas_pane.getWidth(): canvas_pane.getHeight();
+        canvas.setHeight(size);
+        canvas.setWidth(size);
+        canvas.setLayoutX(canvas_pane.getWidth()/2 - size/2);
+        canvas.setLayoutY(canvas_pane.getHeight()/2 - size/2);
+
+        // for debug
+        canvas_pane.setStyle("-fx-background-color: #9b95ff");
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.RED);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     class LightUpdater extends TimerTask {

@@ -5,15 +5,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 
 <BorderPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="monitor.Controller">
-   <center>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <Canvas height="200.0" width="200.0" />
-         </children>
-      </AnchorPane>
-   </center>
    <right>
       <TableView fx:id="table" prefWidth="230.0" BorderPane.alignment="CENTER">
         <columns>
@@ -23,4 +17,18 @@
         </columns>
       </TableView>
    </right>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <bottom>
+            <AnchorPane fx:id="control_pane" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </bottom>
+         <center>
+            <Pane fx:id="canvas_pane" BorderPane.alignment="CENTER">
+               <children>
+                  <Canvas fx:id="canvas" height="200.0" width="200.0" />
+               </children>
+            </Pane>
+         </center>
+      </BorderPane>
+   </center>
 </BorderPane>
