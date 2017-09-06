@@ -141,11 +141,12 @@ public class Controller {
         }
 
         void drawLights() {
-            gc.setLineWidth(0.5);
-            gc.setStroke(Color.LIGHTGRAY);
-
             for(Light l: lights) {
                 // fill lights with temp and lumPct
+                Color color = ImageUtils.getRGBFromK((int)l.getTemperature());
+                double opacity = l.getLumPct() > 0 ? 0.2 + l.getLumPct()/100 * 0.8 : 0;
+                color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+                gc.setFill(color);
                 gc.fillOval(
                         pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
                         pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
@@ -155,15 +156,18 @@ public class Controller {
 
                 // draw stroke line
                 if(selected.get(l.getId()-1)) {
-
+                    gc.setLineWidth(1.0);
+                    gc.setStroke(Color.LIMEGREEN);
                 } else {
-                    gc.strokeOval(
-                            pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
-                            pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
-                            pctToX(lightSizeX),
-                            pctToY(lightSizeY)
-                    );
+                    gc.setLineWidth(0.5);
+                    gc.setStroke(Color.LIGHTGRAY);
                 }
+                gc.strokeOval(
+                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
+                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
+                        pctToX(lightSizeX),
+                        pctToY(lightSizeY)
+                );
             }
         }
 
@@ -186,6 +190,10 @@ public class Controller {
                     ud.setLumPct(l.getLumPct());
                     ud.setTemperature(l.getTemperature());
                 }
+
+                // repaint canvas
+                canvasControl.repaintCanvas();
+
             } catch (Exception ignored) {}
         }
     }
