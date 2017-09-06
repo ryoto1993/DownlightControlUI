@@ -2,10 +2,12 @@ package monitor;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.VPos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckMenuItem;
@@ -14,18 +16,28 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Controller {
+    private Stage parentStage;
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
@@ -46,7 +58,7 @@ public class Controller {
     @FXML
     CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
     @FXML
-    MenuItem menu_exit;
+    MenuItem menu_exit, menu_png;
     @FXML
     Text status_line;
 
@@ -87,13 +99,43 @@ public class Controller {
         return canvasControl;
     }
 
-    void setEventHandler() {
+    void setParentStage(Stage stage) {
+        parentStage = stage;
+    }
+
+    private void setEventHandler() {
         menu_exit.setOnAction(event -> System.exit(10));
+
+        menu_png.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilter =
+                    new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            //Show save file dialog
+            File file = fileChooser.showSaveDialog(parentStage);
+
+            if(file != null){
+                try {
+                    WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                    SnapshotParameters parameters = new SnapshotParameters();
+                    parameters.setFill(Color.web("#292929"));
+                    canvas.snapshot(parameters, writableImage);
+                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                    ImageIO.write(renderedImage, "png", file);
+                } catch (IOException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         menu_show_id.setOnAction(event -> canvasControl.repaintCanvas());
         menu_show_cct.setOnAction(event -> canvasControl.repaintCanvas());
         menu_show_lumPct.setOnAction(event -> canvasControl.repaintCanvas());
-    }
 
+    }
 
     class CanvasControl {
         ArrayList<Boolean> selected = new ArrayList<>();
