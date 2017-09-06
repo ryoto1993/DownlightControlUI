@@ -2,10 +2,14 @@ package monitor;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -24,7 +28,7 @@ public class Controller {
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
-    public CanvasControl canvasControl;
+    private CanvasControl canvasControl;
 
     @FXML
     TableView<LightData> table;
@@ -38,6 +42,10 @@ public class Controller {
     Pane canvas_pane;
     @FXML
     Canvas canvas;
+    @FXML
+    CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
+    @FXML
+    MenuItem menu_exit;
 
     public void initialize() {
         // start socket client
@@ -63,11 +71,19 @@ public class Controller {
 
         // make CanvasControl instance
         canvasControl = new CanvasControl();
+
+        // set event handler to menu items
+        setEventHandler();
     }
 
-    public CanvasControl getCanvasControl() {
+    CanvasControl getCanvasControl() {
         return canvasControl;
     }
+
+    void setEventHandler() {
+        menu_exit.setOnAction(event -> System.exit(10));
+    }
+
 
     class CanvasControl {
         ArrayList<Boolean> selected = new ArrayList<>();
@@ -134,13 +150,19 @@ public class Controller {
             drawLights();
 
             // draw ID
-            drawIDs();
+            if(menu_show_id.isSelected()) {
+                drawIDs();
+            }
 
             // draw lumPct
-            drawPct();
+            if(menu_show_lumPct.isSelected()) {
+                drawPct();
+            }
 
             // draw colorTemp
-            drawTemperature();
+            if(menu_show_cct.isSelected()) {
+                drawTemperature();
+            }
         }
 
         void drawRoom() {
@@ -190,7 +212,7 @@ public class Controller {
                 gc.setFont(Font.font(f));
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
-                gc.setFill(Color.GRAY);
+                gc.setFill(Color.LIGHTGRAY);
                 gc.fillText(
                         String.valueOf(l.getId()),
                         pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
