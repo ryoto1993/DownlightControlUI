@@ -8,13 +8,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -24,7 +21,7 @@ public class Controller {
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
-    public CanvasControl canvasControl = new CanvasControl();
+    public CanvasControl canvasControl;
 
     @FXML
     TableView<LightData> table;
@@ -61,6 +58,8 @@ public class Controller {
         Timer timer = new Timer();
         timer.schedule(lightUpdater, 1000, 500);
 
+        // make CanvasControl instance
+        canvasControl = new CanvasControl();
     }
 
     public CanvasControl getCanvasControl() {
@@ -68,9 +67,39 @@ public class Controller {
     }
 
     class CanvasControl {
+        ArrayList<Boolean> selected = new ArrayList<>();
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        BoxBlur blur = new BoxBlur();  // for antialiasing
         double x = canvas.getWidth();
         double y = canvas.getHeight();
+        double maxPosX = 0;  // max Light.posX
+        double maxPosY = 0;  // max Light.posY
+        double lightSizeX;
+        double lightSizeY;
+
+        CanvasControl() {
+            for(Light l: lights) {
+                // initialize of selected flags
+                selected.add(false);
+
+                // initialize min/max position
+                maxPosX = l.getPosX() > maxPosX ? l.getPosX() : maxPosX;
+                maxPosY = l.getPosY() > maxPosY ? l.getPosY() : maxPosY;
+            }
+            // normalize min/max position
+            maxPosX++;
+            maxPosY++;
+
+            // determine light size
+            lightSizeX = 0.9 / maxPosX / 2.5;
+            lightSizeY = 0.9 / maxPosY / 2.5;
+
+            // antialiasing
+            blur.setWidth(1);
+            blur.setHeight(1);
+            blur.setIterations(1);
+            gc.setEffect(blur);
+        }
 
         // canvas resize
         void canvasResize() {
@@ -81,20 +110,67 @@ public class Controller {
             canvas.setLayoutX(canvas_pane.getWidth()/2 - size/2);
             canvas.setLayoutY(canvas_pane.getHeight()/2 - size/2);
 
-            // for debug
+            // update canvas size variable
+            this.x = size;
+            this.y = size;
+
+            // repaint
             repaintCanvas();
         }
 
         void repaintCanvas() {
+            // clear
+            gc.setEffect(null);
+            gc.clearRect(0, 0, x, y);
+            gc.setEffect(blur);
 
-            // room layout
+            // draw room layout
+            drawRoom();
+
+            // draw lights
+            drawLights();
+        }
+
+        void drawRoom() {
             gc.setLineWidth(0.5);
             gc.setStroke(Color.CYAN);
-            gc.strokeRect();
-
-            gc.setFill(Color.RED);
-            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            gc.strokeRect(
+                    pctToX(0.05), pctToY(0.05),
+                    pctToX(0.90), pctToY(0.90)
+            );
         }
+
+        void drawLights() {
+            gc.setLineWidth(0.5);
+            gc.setStroke(Color.LIGHTGRAY);
+
+            for(Light l: lights) {
+                // fill lights with temp and lumPct
+                gc.fillOval(
+                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
+                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
+                        pctToX(lightSizeX),
+                        pctToY(lightSizeY)
+                );
+
+                // draw stroke line
+                if(selected.get(l.getId()-1)) {
+
+                } else {
+                    gc.strokeOval(
+                            pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
+                            pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
+                            pctToX(lightSizeX),
+                            pctToY(lightSizeY)
+                    );
+                }
+            }
+        }
+
+        private double pctToX(double x_pct) {return x * x_pct;}
+
+        private double pctToY(double y_pct) {return y * y_pct;}
+
     }
 
     class LightUpdater extends TimerTask {

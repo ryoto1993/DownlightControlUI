@@ -19,9 +19,9 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 1100, 700));
         primaryStage.setOnCloseRequest(event -> System.exit(1));
         primaryStage.widthProperty().addListener((observable, oldValue, newValue)
-                -> controller.getCanvasControl().repaintCanvas());
+                -> controller.getCanvasControl().canvasResize());
         primaryStage.heightProperty().addListener((observable, oldValue, newValue)
-                -> controller.getCanvasControl().repaintCanvas());
+                -> controller.getCanvasControl().canvasResize());
         primaryStage.show();
     }
 

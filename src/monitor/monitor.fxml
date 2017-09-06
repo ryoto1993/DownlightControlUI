@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="monitor.Controller">
+<BorderPane prefHeight="500.0" prefWidth="800.0" stylesheets="@monitor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="monitor.Controller">
    <right>
       <TableView fx:id="table" prefWidth="230.0" BorderPane.alignment="CENTER">
         <columns>
