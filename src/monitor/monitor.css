@@ -3,3 +3,12 @@
 #canvas_pane {
     -fx-background-color: #292929;
 }
+
+#status_pane {
+    -fx-border-width: 0.5, 0, 0, 0;
+    -fx-border-color: darkgrey;
+}
+
+#status_line {
+    -fx-fill: #292929;
+}

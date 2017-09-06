@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
 
 <BorderPane prefHeight="500.0" prefWidth="800.0" stylesheets="@monitor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="monitor.Controller">
    <right>
@@ -61,4 +62,11 @@
         </menus>
       </MenuBar>
    </top>
+   <bottom>
+      <AnchorPane fx:id="status_pane" BorderPane.alignment="CENTER">
+         <children>
+            <Text fx:id="status_line" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="2.0" />
+         </children>
+      </AnchorPane>
+   </bottom>
 </BorderPane>

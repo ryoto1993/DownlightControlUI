@@ -17,6 +17,7 @@ import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.net.InetSocketAddress;
@@ -46,11 +47,13 @@ public class Controller {
     CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
     @FXML
     MenuItem menu_exit;
+    @FXML
+    Text status_line;
 
     public void initialize() {
         // start socket client
-        socketClient = new SocketClient(
-                new InetSocketAddress("localhost", 44344));
+        InetSocketAddress endpoint = new InetSocketAddress("localhost", 44344);
+        socketClient = new SocketClient(endpoint);
 
         // get lights data from server
         lights = socketClient.getLights();
@@ -67,13 +70,17 @@ public class Controller {
         // update table item every X mill seconds
         LightUpdater lightUpdater = new LightUpdater();
         Timer timer = new Timer();
-        timer.schedule(lightUpdater, 1000, 500);
+        timer.schedule(lightUpdater, 500, 1000);
 
         // make CanvasControl instance
         canvasControl = new CanvasControl();
 
         // set event handler to menu items
         setEventHandler();
+
+        // edit status line
+        status_line.setText("Listening...  [ Host: " + endpoint.getHostName()
+                        + ", Port: " + endpoint.getPort() + " ]");
     }
 
     CanvasControl getCanvasControl() {
@@ -82,6 +89,9 @@ public class Controller {
 
     void setEventHandler() {
         menu_exit.setOnAction(event -> System.exit(10));
+        menu_show_id.setOnAction(event -> canvasControl.repaintCanvas());
+        menu_show_cct.setOnAction(event -> canvasControl.repaintCanvas());
+        menu_show_lumPct.setOnAction(event -> canvasControl.repaintCanvas());
     }
 
 
