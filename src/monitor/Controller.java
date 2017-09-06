@@ -24,6 +24,7 @@ public class Controller {
     private SocketClient socketClient;
     private ArrayList<Light> lights = null;
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
+    public CanvasControl canvasControl = new CanvasControl();
 
     @FXML
     TableView<LightData> table;
@@ -62,19 +63,38 @@ public class Controller {
 
     }
 
-    // canvas resize
-    void canvasResize() {
-        double size = canvas_pane.getHeight() > canvas_pane.getWidth()
-                ? canvas_pane.getWidth(): canvas_pane.getHeight();
-        canvas.setHeight(size);
-        canvas.setWidth(size);
-        canvas.setLayoutX(canvas_pane.getWidth()/2 - size/2);
-        canvas.setLayoutY(canvas_pane.getHeight()/2 - size/2);
+    public CanvasControl getCanvasControl() {
+        return canvasControl;
+    }
 
-        // for debug
+    class CanvasControl {
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.RED);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        double x = canvas.getWidth();
+        double y = canvas.getHeight();
+
+        // canvas resize
+        void canvasResize() {
+            double size = canvas_pane.getHeight() > canvas_pane.getWidth()
+                    ? canvas_pane.getWidth(): canvas_pane.getHeight();
+            canvas.setHeight(size);
+            canvas.setWidth(size);
+            canvas.setLayoutX(canvas_pane.getWidth()/2 - size/2);
+            canvas.setLayoutY(canvas_pane.getHeight()/2 - size/2);
+
+            // for debug
+            repaintCanvas();
+        }
+
+        void repaintCanvas() {
+
+            // room layout
+            gc.setLineWidth(0.5);
+            gc.setStroke(Color.CYAN);
+            gc.strokeRect();
+
+            gc.setFill(Color.RED);
+            gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        }
     }
 
     class LightUpdater extends TimerTask {

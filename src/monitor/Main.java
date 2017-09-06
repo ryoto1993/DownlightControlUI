@@ -18,8 +18,10 @@ public class Main extends Application {
         primaryStage.setTitle("KC-101 Downlight Monitor");
         primaryStage.setScene(new Scene(root, 1100, 700));
         primaryStage.setOnCloseRequest(event -> System.exit(1));
-        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> controller.canvasResize());
-        primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> controller.canvasResize());
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue)
+                -> controller.getCanvasControl().repaintCanvas());
+        primaryStage.heightProperty().addListener((observable, oldValue, newValue)
+                -> controller.getCanvasControl().repaintCanvas());
         primaryStage.show();
     }
 
