@@ -135,6 +135,12 @@ public class Controller {
 
             // draw ID
             drawIDs();
+
+            // draw lumPct
+            drawPct();
+
+            // draw colorTemp
+            drawTemperature();
         }
 
         void drawRoom() {
@@ -184,12 +190,44 @@ public class Controller {
                 gc.setFont(Font.font(f));
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setTextBaseline(VPos.CENTER);
-                gc.setFill(Color.LIGHTGRAY);
+                gc.setFill(Color.GRAY);
                 gc.fillText(
                         String.valueOf(l.getId()),
                         pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
                         pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY)),
                         pctToX(lightSizeX/2));
+            }
+        }
+
+        void drawPct() {
+            for(Light l: lights) {
+                // draw stroke line
+                double f = pctToX(lightSizeX/3);
+                gc.setFont(Font.font(f));
+                gc.setTextAlign(TextAlignment.CENTER);
+                gc.setTextBaseline(VPos.CENTER);
+                gc.setFill(Color.LIGHTGRAY);
+                gc.fillText(
+                        String.valueOf(l.getLumPct() + " %"),
+                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
+                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) + lightSizeY/2 + lightSizeY/8 * 2)
+                );
+            }
+        }
+
+        void drawTemperature() {
+            for(Light l: lights) {
+                // draw stroke line
+                double f = pctToX(lightSizeX/3);
+                gc.setFont(Font.font(f));
+                gc.setTextAlign(TextAlignment.CENTER);
+                gc.setTextBaseline(VPos.CENTER);
+                gc.setFill(Color.LIGHTGRAY);
+                gc.fillText(
+                        String.valueOf((int)l.getTemperature() + " K"),
+                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
+                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) + lightSizeY/2 + lightSizeY/8 * 5)
+                );
             }
         }
 
