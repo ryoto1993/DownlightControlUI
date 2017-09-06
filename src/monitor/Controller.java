@@ -10,14 +10,13 @@ import javafx.geometry.VPos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -29,6 +28,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -58,7 +59,7 @@ public class Controller {
     @FXML
     CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
     @FXML
-    MenuItem menu_exit, menu_png;
+    MenuItem menu_exit, menu_png, menu_about;
     @FXML
     Text status_line;
 
@@ -68,7 +69,12 @@ public class Controller {
         socketClient = new SocketClient(endpoint);
 
         // get lights data from server
-        lights = socketClient.getLights();
+        try {
+            lights = socketClient.getLights();
+        } catch (Exception e) {
+            showExceptionDialog(e);
+        }
+
         for(Light l: lights) {
             lightsList.add(new LightData(l.getId(), l.getLumPct(), l.getTemperature()));
         }
@@ -131,10 +137,52 @@ public class Controller {
             }
         });
 
+        menu_about.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("KC-101 Downlight Monitor");
+            alert.setHeaderText("KC-101 Downlight Monitor");
+            alert.setContentText("This application is made by Ryoto Tomioka @20th.");
+            alert.showAndWait();
+        });
+
         menu_show_id.setOnAction(event -> canvasControl.repaintCanvas());
         menu_show_cct.setOnAction(event -> canvasControl.repaintCanvas());
         menu_show_lumPct.setOnAction(event -> canvasControl.repaintCanvas());
 
+    }
+
+    private void showExceptionDialog(Exception ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Exception occurred!!");
+        alert.setHeaderText("Oops! Exception has been occurred.");
+        alert.setContentText(ex.getLocalizedMessage());
+
+        // Create expandable Exception.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        Label label = new Label("The exception stacktrace was:");
+
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        // Set expandable Exception into the dialog pane.
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        alert.showAndWait();
     }
 
     class CanvasControl {
