@@ -31,6 +31,7 @@
          <center>
             <Pane fx:id="canvas_pane" BorderPane.alignment="CENTER">
                <children>
+                  <Pane fx:id="group_pane" prefHeight="200.0" prefWidth="200.0" />
                   <Canvas fx:id="canvas" height="200.0" width="200.0" />
                </children>
             </Pane>

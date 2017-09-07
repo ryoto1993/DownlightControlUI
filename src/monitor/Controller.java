@@ -55,6 +55,8 @@ public class Controller {
     @FXML
     Pane canvas_pane;
     @FXML
+    Pane group_pane;
+    @FXML
     Canvas canvas;
     @FXML
     CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
