@@ -4,8 +4,14 @@
     -fx-background-color: #292929;
 }
 
+#control_pane {
+    -fx-background-color: #292929;
+    -fx-border-width: 0.5 0.0 0.0 0.0;
+    -fx-border-color: limegreen;
+}
+
 #status_pane {
-    -fx-border-width: 0.5, 0, 0, 0;
+    -fx-border-width: 0.5 0 0 0;
     -fx-border-color: darkgrey;
 }
 
