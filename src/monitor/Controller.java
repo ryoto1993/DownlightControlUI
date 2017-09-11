@@ -328,10 +328,10 @@ public class Controller {
 
         void updateRoom() {
             // set size
-            shapeRoom.setX(pctToX(0.05));
-            shapeRoom.setY(pctToY(0.05));
-            shapeRoom.setWidth(pctToX(0.90));
-            shapeRoom.setHeight(pctToY(0.90));
+            shapeRoom.setX(pctToX(0.03));
+            shapeRoom.setY(pctToY(0.03));
+            shapeRoom.setWidth(pctToX(0.94));
+            shapeRoom.setHeight(pctToY(0.94));
         }
 
         void updateLights() {
