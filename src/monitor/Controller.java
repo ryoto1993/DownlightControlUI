@@ -208,7 +208,7 @@ public class Controller {
         ArrayList<Text> shapeTemp = new ArrayList<>();
 
         // light selected flag
-        private ArrayList<Boolean> selected = new ArrayList<>();
+        ArrayList<Boolean> selected = new ArrayList<>();
 
         double x;
         double y;
@@ -236,6 +236,9 @@ public class Controller {
 
             // initialize shapes
             initShape();
+
+            // set mouse listener
+            setMouseListener();
         }
 
         void initShape() {
@@ -288,6 +291,10 @@ public class Controller {
                 tmp.setVisible(menu_show_cct.isSelected());
                 vInfo.getChildren().add(tmp);
             }
+        }
+
+        void setMouseListener() {
+            // ToDo: generate mouse listener
         }
 
         void canvasResize() {
