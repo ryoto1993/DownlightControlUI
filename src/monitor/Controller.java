@@ -41,15 +41,6 @@ public class Controller {
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
     private CanvasControl canvasControl;
 
-    // Shapes
-    private Rectangle shapeRoom;
-    private ArrayList<Ellipse> shapeLights = new ArrayList<>();
-    private ArrayList<VBox> vboxID = new ArrayList<>();
-    private ArrayList<VBox> vboxInfo = new ArrayList<>();
-    private ArrayList<Text> shapeID = new ArrayList<>();
-    private ArrayList<Text> shapeLum = new ArrayList<>();
-    private ArrayList<Text> shapeTemp = new ArrayList<>();
-
     @FXML
     TableView<LightData> table;
     @FXML
@@ -153,19 +144,19 @@ public class Controller {
 
         menu_show_id.setOnAction(event -> {
             Boolean selected = menu_show_id.isSelected();
-            for (Text t: shapeID) {
+            for (Text t: canvasControl.shapeID) {
                 t.setVisible(selected);
             }
         });
         menu_show_cct.setOnAction(event -> {
             Boolean selected = menu_show_cct.isSelected();
-            for (Text t: shapeTemp) {
+            for (Text t: canvasControl.shapeTemp) {
                 t.setVisible(selected);
             }
         });
         menu_show_lumPct.setOnAction(event -> {
             Boolean selected = menu_show_lumPct.isSelected();
-            for (Text t: shapeLum) {
+            for (Text t: canvasControl.shapeLum) {
                 t.setVisible(selected);
             }
         });
@@ -207,14 +198,22 @@ public class Controller {
     }
 
     class CanvasControl {
-        ArrayList<Boolean> selected = new ArrayList<>();
-        ArrayList<Circle> circles = new ArrayList<>();
-        // GraphicsContext gc = canvas.getGraphicsContext2D();
-        // BoxBlur blur = new BoxBlur();  // for antialiasing
+        // Shapes
+        Rectangle shapeRoom;
+        ArrayList<Ellipse> shapeLights = new ArrayList<>();
+        ArrayList<VBox> vboxID = new ArrayList<>();
+        ArrayList<VBox> vboxInfo = new ArrayList<>();
+        ArrayList<Text> shapeID = new ArrayList<>();
+        ArrayList<Text> shapeLum = new ArrayList<>();
+        ArrayList<Text> shapeTemp = new ArrayList<>();
+
+        // light selected flag
+        private ArrayList<Boolean> selected = new ArrayList<>();
+
         double x;
         double y;
-        double maxPosX = 0;  // max Light.posX
-        double maxPosY = 0;  // max Light.posY
+        double maxPosX = 0;  // max of Light.posX
+        double maxPosY = 0;  // max of Light.posY
         double lightSizeX;
         double lightSizeY;
 
@@ -222,9 +221,6 @@ public class Controller {
             for(Light l: lights) {
                 // initialize of selected flags
                 selected.add(false);
-
-                // initialize of circle shape
-                circles.add(new Circle());
 
                 // initialize min/max position
                 maxPosX = l.getPosX() > maxPosX ? l.getPosX() : maxPosX;
@@ -238,11 +234,10 @@ public class Controller {
             lightSizeX = 0.9 / maxPosX / 4.0;
             lightSizeY = 0.9 / maxPosY / 4.0;
 
-            // initialize shape
+            // initialize shapes
             initShape();
         }
 
-        // initialize of shapes
         void initShape() {
             // Room shape
             shapeRoom = new Rectangle();
@@ -295,7 +290,6 @@ public class Controller {
             }
         }
 
-        // canvas resize
         void canvasResize() {
             double size = canvas_pane.getHeight() > canvas_pane.getWidth()
                     ? canvas_pane.getWidth(): canvas_pane.getHeight();
@@ -361,7 +355,6 @@ public class Controller {
                     light.setStrokeWidth(1.0);
                     light.setStroke(Color.LIGHTGRAY);
                 }
-
             }
         }
 
@@ -394,8 +387,8 @@ public class Controller {
 
                 // change text properties
                 double f = pctToX(lightSizeX/2);
-                lum.setFill(Color.LIMEGREEN);
-                tmp.setFill(Color.LIMEGREEN);
+                lum.setFill(Color.LIGHTGRAY);
+                tmp.setFill(Color.LIGHTGRAY);
                 lum.setFont(Font.font(f));
                 tmp.setFont(Font.font(f));
                 lum.setText(String.valueOf(l.getLumPct()) + " %");
@@ -415,6 +408,7 @@ public class Controller {
 
     }
 
+    // this timer updates light information via socket connection
     class LightUpdater extends TimerTask {
         public void run() {
             try {

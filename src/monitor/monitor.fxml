@@ -14,7 +14,7 @@
 
 <BorderPane prefHeight="500.0" prefWidth="800.0" stylesheets="@monitor.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="monitor.Controller">
    <right>
-      <TableView fx:id="table" prefWidth="230.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="table" prefWidth="240.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="col_id" prefWidth="50.0" text="ID" />
           <TableColumn fx:id="col_lum" prefWidth="75.0" text="Lum" />
