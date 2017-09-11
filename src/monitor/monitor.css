@@ -15,6 +15,10 @@
     -fx-border-color: darkgrey;
 }
 
+#group_pane {
+    -fx-background-color: #292929;
+}
+
 #status_line {
     -fx-fill: #292929;
 }

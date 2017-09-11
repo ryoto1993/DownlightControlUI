@@ -3,21 +3,17 @@ package monitor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -25,6 +21,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +41,15 @@ public class Controller {
     private final ObservableList<LightData> lightsList = FXCollections.observableArrayList();
     private CanvasControl canvasControl;
 
+    // Shapes
+    private Rectangle shapeRoom;
+    private ArrayList<Ellipse> shapeLights = new ArrayList<>();
+    private ArrayList<VBox> vboxID = new ArrayList<>();
+    private ArrayList<VBox> vboxInfo = new ArrayList<>();
+    private ArrayList<Text> shapeID = new ArrayList<>();
+    private ArrayList<Text> shapeLum = new ArrayList<>();
+    private ArrayList<Text> shapeTemp = new ArrayList<>();
+
     @FXML
     TableView<LightData> table;
     @FXML
@@ -56,8 +62,6 @@ public class Controller {
     Pane canvas_pane;
     @FXML
     Pane group_pane;
-    @FXML
-    Canvas canvas;
     @FXML
     CheckMenuItem menu_show_id, menu_show_lumPct, menu_show_cct;
     @FXML
@@ -127,10 +131,8 @@ public class Controller {
 
             if(file != null){
                 try {
-                    WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-                    SnapshotParameters parameters = new SnapshotParameters();
-                    parameters.setFill(Color.web("#292929"));
-                    canvas.snapshot(parameters, writableImage);
+                    WritableImage writableImage = new WritableImage((int)group_pane.getWidth(), (int)group_pane.getHeight());
+                    group_pane.snapshot(null, writableImage);
                     RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                     ImageIO.write(renderedImage, "png", file);
                 } catch (IOException ex) {
@@ -143,13 +145,30 @@ public class Controller {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("KC-101 Downlight Monitor");
             alert.setHeaderText("KC-101 Downlight Monitor");
-            alert.setContentText("This application is made by Ryoto Tomioka @20th.");
+            alert.setContentText("This application is coded by Ryoto Tomioka @ISDL 20th." +
+                    "If there is some question, please ask me.\n\n" +
+                    "Contact: tommy.ryoto93@gmail.com");
             alert.showAndWait();
         });
 
-        menu_show_id.setOnAction(event -> canvasControl.repaintCanvas());
-        menu_show_cct.setOnAction(event -> canvasControl.repaintCanvas());
-        menu_show_lumPct.setOnAction(event -> canvasControl.repaintCanvas());
+        menu_show_id.setOnAction(event -> {
+            Boolean selected = menu_show_id.isSelected();
+            for (Text t: shapeID) {
+                t.setVisible(selected);
+            }
+        });
+        menu_show_cct.setOnAction(event -> {
+            Boolean selected = menu_show_cct.isSelected();
+            for (Text t: shapeTemp) {
+                t.setVisible(selected);
+            }
+        });
+        menu_show_lumPct.setOnAction(event -> {
+            Boolean selected = menu_show_lumPct.isSelected();
+            for (Text t: shapeLum) {
+                t.setVisible(selected);
+            }
+        });
 
     }
 
@@ -189,10 +208,11 @@ public class Controller {
 
     class CanvasControl {
         ArrayList<Boolean> selected = new ArrayList<>();
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        BoxBlur blur = new BoxBlur();  // for antialiasing
-        double x = canvas.getWidth();
-        double y = canvas.getHeight();
+        ArrayList<Circle> circles = new ArrayList<>();
+        // GraphicsContext gc = canvas.getGraphicsContext2D();
+        // BoxBlur blur = new BoxBlur();  // for antialiasing
+        double x;
+        double y;
         double maxPosX = 0;  // max Light.posX
         double maxPosY = 0;  // max Light.posY
         double lightSizeX;
@@ -203,6 +223,9 @@ public class Controller {
                 // initialize of selected flags
                 selected.add(false);
 
+                // initialize of circle shape
+                circles.add(new Circle());
+
                 // initialize min/max position
                 maxPosX = l.getPosX() > maxPosX ? l.getPosX() : maxPosX;
                 maxPosY = l.getPosY() > maxPosY ? l.getPosY() : maxPosY;
@@ -212,146 +235,177 @@ public class Controller {
             maxPosY++;
 
             // determine light size
-            lightSizeX = 0.9 / maxPosX / 2.5;
-            lightSizeY = 0.9 / maxPosY / 2.5;
+            lightSizeX = 0.9 / maxPosX / 4.0;
+            lightSizeY = 0.9 / maxPosY / 4.0;
 
-            // antialiasing
-            blur.setWidth(1);
-            blur.setHeight(1);
-            blur.setIterations(1);
-            gc.setEffect(blur);
+            // initialize shape
+            initShape();
+        }
+
+        // initialize of shapes
+        void initShape() {
+            // Room shape
+            shapeRoom = new Rectangle();
+            shapeRoom.setStrokeWidth(0.5);
+            shapeRoom.setStroke(Color.CYAN);
+            shapeRoom.setFill(null);
+            group_pane.getChildren().add(shapeRoom);
+
+            // Lights shape
+            for (int i=0; i<lights.size(); i++) {
+                Ellipse c = new Ellipse();
+                shapeLights.add(c);
+                group_pane.getChildren().add(c);
+            }
+
+            // info Texts
+            for (int i=0; i<lights.size(); i++) {
+                // generate ID VBox
+                VBox vID = new VBox();
+                vID.setAlignment(Pos.CENTER);
+                vboxID.add(vID);
+                group_pane.getChildren().add(vID);
+
+                // generate info VBox
+                VBox vInfo = new VBox();
+                vInfo.setAlignment(Pos.CENTER);
+                vboxInfo.add(vInfo);
+                group_pane.getChildren().add(vInfo);
+
+                // Light IDs shape
+                Text id = new Text();
+                shapeID.add(id);
+                id.setTextAlignment(TextAlignment.CENTER);
+                id.setVisible(menu_show_id.isSelected());
+                vID.getChildren().add(id);
+
+                // Light Lum shape
+                Text lum = new Text();
+                shapeLum.add(lum);
+                lum.setTextAlignment(TextAlignment.CENTER);
+                lum.setVisible(menu_show_lumPct.isSelected());
+                vInfo.getChildren().add(lum);
+
+                // Light temp shape
+                Text tmp = new Text();
+                shapeTemp.add(tmp);
+                tmp.setTextAlignment(TextAlignment.CENTER);
+                tmp.setVisible(menu_show_cct.isSelected());
+                vInfo.getChildren().add(tmp);
+            }
         }
 
         // canvas resize
         void canvasResize() {
             double size = canvas_pane.getHeight() > canvas_pane.getWidth()
                     ? canvas_pane.getWidth(): canvas_pane.getHeight();
-            canvas.setHeight(size);
-            canvas.setWidth(size);
-            canvas.setLayoutX(canvas_pane.getWidth()/2 - size/2);
-            canvas.setLayoutY(canvas_pane.getHeight()/2 - size/2);
+            // group_pane.resize(size, size);
+            group_pane.setPrefSize(size, size);
+            group_pane.setLayoutX(canvas_pane.getWidth()/2 - size/2);
+            group_pane.setLayoutY(canvas_pane.getHeight()/2 - size/2);
 
             // update canvas size variable
             this.x = size;
             this.y = size;
 
             // repaint
-            repaintCanvas();
+            updateCanvas();
         }
 
-        void repaintCanvas() {
-            // clear
-            gc.setEffect(null);
-            gc.clearRect(0, 0, x, y);
-            gc.setEffect(blur);
+        void updateCanvas() {
+            // Room layout
+            updateRoom();
 
-            // draw room layout
-            drawRoom();
-
-            // draw lights
-            drawLights();
+            // Lights
+            updateLights();
 
             // draw ID
-            if(menu_show_id.isSelected()) {
-                drawIDs();
-            }
+            updateIDs();
 
-            // draw lumPct
-            if(menu_show_lumPct.isSelected()) {
-                drawPct();
-            }
-
-            // draw colorTemp
-            if(menu_show_cct.isSelected()) {
-                drawTemperature();
-            }
+            // draw info
+            updateInfo();
         }
 
-        void drawRoom() {
-            gc.setLineWidth(0.5);
-            gc.setStroke(Color.CYAN);
-            gc.strokeRect(
-                    pctToX(0.05), pctToY(0.05),
-                    pctToX(0.90), pctToY(0.90)
-            );
+        void updateRoom() {
+            // set size
+            shapeRoom.setX(pctToX(0.05));
+            shapeRoom.setY(pctToY(0.05));
+            shapeRoom.setWidth(pctToX(0.90));
+            shapeRoom.setHeight(pctToY(0.90));
         }
 
-        void drawLights() {
+        void updateLights() {
             for(Light l: lights) {
-                // fill lights with temp and lumPct
+                // find LightShape instance by light ID
+                Ellipse light = shapeLights.get(l.getId() - 1);
+
+                // generate lights color with temp and lumPct
                 Color color = ImageUtils.getRGBFromK((int)l.getTemperature());
                 double opacity = l.getLumPct() > 0 ? 0.2 + l.getLumPct()/100 * 0.8 : 0;
                 color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
-                gc.setFill(color);
-                gc.fillOval(
-                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
-                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
-                        pctToX(lightSizeX),
-                        pctToY(lightSizeY)
-                );
 
-                // draw stroke line
+                // set size
+                light.setCenterX(pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)));
+                light.setCenterY(pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY)));
+                light.setRadiusX(pctToX(lightSizeX));
+                light.setRadiusY(pctToY(lightSizeY));
+
+                // set color
+                light.setFill(color);
+
+                // set stroke
                 if(selected.get(l.getId()-1)) {
-                    gc.setLineWidth(1.0);
-                    gc.setStroke(Color.LIMEGREEN);
+                    light.setStrokeWidth(2.0);
+                    light.setStroke(Color.LIMEGREEN);
                 } else {
-                    gc.setLineWidth(0.5);
-                    gc.setStroke(Color.LIGHTGRAY);
+                    light.setStrokeWidth(1.0);
+                    light.setStroke(Color.LIGHTGRAY);
                 }
-                gc.strokeOval(
-                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX/2),
-                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY/2),
-                        pctToX(lightSizeX),
-                        pctToY(lightSizeY)
-                );
+
             }
         }
 
-        void drawIDs() {
+        void updateIDs() {
             for(Light l: lights) {
-                // draw stroke line
+                // find Text and container by ID
+                VBox vID = vboxID.get(l.getId() - 1);
+                Text id = shapeID.get(l.getId() - 1);
+
+                // change text properties
+                double f = pctToX(lightSizeX/1.2);
+                id.setFill(Color.LIGHTGRAY);
+                id.setFont(Font.font(f));
+                id.setText(String.valueOf(l.getId()));
+
+                // resize and reposition VBox
+                vID.setLayoutX(pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX));
+                vID.setLayoutY(pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) - lightSizeY));
+                vID.setPrefSize(pctToX(lightSizeX*2), pctToY(lightSizeY*2));
+                vID.setFillWidth(true);
+            }
+        }
+
+        void updateInfo() {
+            for(Light l: lights) {
+                // find Text and container by ID
+                VBox vInfo = vboxInfo.get(l.getId() - 1);
+                Text lum = shapeLum.get(l.getId() - 1);
+                Text tmp = shapeTemp.get(l.getId() - 1);
+
+                // change text properties
                 double f = pctToX(lightSizeX/2);
-                gc.setFont(Font.font(f));
-                gc.setTextAlign(TextAlignment.CENTER);
-                gc.setTextBaseline(VPos.CENTER);
-                gc.setFill(Color.LIGHTGRAY);
-                gc.fillText(
-                        String.valueOf(l.getId()),
-                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
-                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY)),
-                        pctToX(lightSizeX/2));
-            }
-        }
+                lum.setFill(Color.LIMEGREEN);
+                tmp.setFill(Color.LIMEGREEN);
+                lum.setFont(Font.font(f));
+                tmp.setFont(Font.font(f));
+                lum.setText(String.valueOf(l.getLumPct()) + " %");
+                tmp.setText(String.valueOf(l.getTemperature()) + " K");
 
-        void drawPct() {
-            for(Light l: lights) {
-                // draw stroke line
-                double f = pctToX(lightSizeX/3);
-                gc.setFont(Font.font(f));
-                gc.setTextAlign(TextAlignment.CENTER);
-                gc.setTextBaseline(VPos.CENTER);
-                gc.setFill(Color.LIGHTGRAY);
-                gc.fillText(
-                        String.valueOf(l.getLumPct() + " %"),
-                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
-                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) + lightSizeY/2 + lightSizeY/8 * 2)
-                );
-            }
-        }
-
-        void drawTemperature() {
-            for(Light l: lights) {
-                // draw stroke line
-                double f = pctToX(lightSizeX/3);
-                gc.setFont(Font.font(f));
-                gc.setTextAlign(TextAlignment.CENTER);
-                gc.setTextBaseline(VPos.CENTER);
-                gc.setFill(Color.LIGHTGRAY);
-                gc.fillText(
-                        String.valueOf((int)l.getTemperature() + " K"),
-                        pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX)),
-                        pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) + lightSizeY/2 + lightSizeY/8 * 5)
-                );
+                // resize and reposition VBox
+                vInfo.setLayoutX(pctToX(0.05 + (l.getPosX() + 0.5)*(0.9/maxPosX) - lightSizeX));
+                vInfo.setLayoutY(pctToY(0.05 + (l.getPosY() + 0.5)*(0.9/maxPosY) + lightSizeY));
+                vInfo.setPrefSize(pctToX(lightSizeX*2), pctToY(lightSizeY));
+                vInfo.setFillWidth(true);
             }
         }
 
@@ -375,8 +429,8 @@ public class Controller {
                     ud.setTemperature(l.getTemperature());
                 }
 
-                // repaint canvas
-                canvasControl.repaintCanvas();
+                // update canvas
+                canvasControl.updateCanvas();
 
             } catch (Exception ignored) {}
         }
