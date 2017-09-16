@@ -27,8 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -62,14 +65,21 @@ public class Controller {
 
     public void initialize() {
         // start socket client
-        InetSocketAddress endpoint = new InetSocketAddress("localhost", 44344);
+        InetSocketAddress endpoint = new InetSocketAddress("172.20.11.53", 44344);
         socketClient = new SocketClient(endpoint);
 
         // get lights data from server
-        try {
-            lights = socketClient.getLights();
-        } catch (Exception e) {
-            showExceptionDialog(e);
+        while (true) {
+            try {
+                lights = socketClient.getLights();
+                break;
+            } catch (Exception e) {
+                if (e.getClass().equals(SocketTimeoutException.class)) {
+                    showChangeHostDialog();
+                } else {
+                    showExceptionDialog(e);
+                }
+            }
         }
 
         for(Light l: lights) {
@@ -195,6 +205,23 @@ public class Controller {
         alert.getDialogPane().setExpandableContent(expContent);
 
         alert.showAndWait();
+    }
+
+    private void showChangeHostDialog() {
+        TextInputDialog dialog = new TextInputDialog("172.20.11.53");
+        dialog.setTitle("Socket Timeout Exception has been occurred");
+        dialog.setHeaderText("Socket connection timeout.\n" +
+                "Please check server's hostname and enter the new hostname.");
+        dialog.setContentText("New hostname:");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            socketClient.setEndpoint(new InetSocketAddress(result.get(), 44344));
+        } else {
+            System.exit(500);
+        }
     }
 
     class CanvasControl {

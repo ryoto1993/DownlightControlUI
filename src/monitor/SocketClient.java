@@ -24,7 +24,7 @@ class SocketClient {
         // generate socket
         Socket socket = new Socket();
         try {
-            socket.connect(endpoint);
+            socket.connect(endpoint, 500);
         } catch (SocketException ignored) {}
 
         // setting
@@ -50,6 +50,10 @@ class SocketClient {
         lights = mapper.readValue(json, new TypeReference<ArrayList<Light>>() {});
 
         return lights;
+    }
+
+    public void setEndpoint(InetSocketAddress end) {
+        endpoint = end;
     }
 
 }
