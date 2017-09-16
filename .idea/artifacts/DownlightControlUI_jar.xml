@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DownlightControlUI:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DownlightControlUI_jar</output-path>
+    <root id="archive" name="DownlightControlUI.jar">
+      <element id="module-output" name="DownlightControlUI" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/guigarage/flatter/0.7/flatter-0.7.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jackson-annotations-2.9.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jackson-databind-2.9.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jackson-core-2.9.0.jar" path-in-jar="/" />
+      <element id="library" level="project" name="jackson-databind-2.9.0" />
+      <element id="library" level="project" name="com.guigarage:flatter:0.7" />
+      <element id="library" level="project" name="jackson-annotations-2.9.0" />
+      <element id="library" level="project" name="jackson-core-2.9.0" />
+    </root>
+  </artifact>
+</component>
