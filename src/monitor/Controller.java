@@ -104,8 +104,8 @@ public class Controller {
         setEventHandler();
 
         // edit status line
-        status_line.setText("Listening...  [ Host: " + endpoint.getHostName()
-                        + ", Port: " + endpoint.getPort() + " ]");
+        status_line.setText("Listening...  [ Host: " + socketClient.getEndpoint().getHostName()
+                        + ", Port: " + socketClient.getEndpoint().getPort() + " ]");
     }
 
     CanvasControl getCanvasControl() {

@@ -56,4 +56,7 @@ class SocketClient {
         endpoint = end;
     }
 
+    public  InetSocketAddress getEndpoint() {
+        return endpoint;
+    }
 }
