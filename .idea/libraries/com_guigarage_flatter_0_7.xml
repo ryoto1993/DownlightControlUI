@@ -3,6 +3,7 @@
     <properties maven-id="com.guigarage:flatter:0.7" />
     <CLASSES>
       <root url="jar://$MAVEN_REPOSITORY$/com/guigarage/flatter/0.7/flatter-0.7.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/guigarage/flatter/0.7/flatter-0.7.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
