@@ -65,7 +65,7 @@ public class Controller {
 
     public void initialize() {
         // start socket client
-        InetSocketAddress endpoint = new InetSocketAddress("172.20.11.53", 44344);
+        InetSocketAddress endpoint = new InetSocketAddress("172.20.11.58", 44344);
         socketClient = new SocketClient(endpoint);
 
         // get lights data from server
